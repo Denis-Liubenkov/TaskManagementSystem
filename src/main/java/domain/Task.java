@@ -33,8 +33,8 @@ public class Task {
     @Column(name = "priority", nullable = false)
     private Priority priority;
 
-    @OneToOne
-    @JoinColumn(name = "executor_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "executor_id")
     private Executor executor;
 
     @ManyToOne

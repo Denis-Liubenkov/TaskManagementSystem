@@ -1,10 +1,14 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "executor")
 @Data
@@ -24,4 +28,8 @@ public class Executor {
     @Pattern(regexp = "^[А-Яа-яЁё]+$")
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @OneToMany(mappedBy = "executor", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Task> taskList = new ArrayList<>();
 }
