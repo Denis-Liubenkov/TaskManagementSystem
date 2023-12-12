@@ -1,4 +1,4 @@
-package exceptions;
+package com.tms.taskmanagementsystem.exceptions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,12 @@ public class ExceptionResolver {
     @ExceptionHandler(value = TaskNotFoundException.class)
     public ResponseEntity<HttpStatus> taskNotFoundException() {
         log.info("TaskNotFoundException exception!");
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = ListOfTasksNotFoundException.class)
+    public ResponseEntity<HttpStatus> listOfTasksNotFoundException() {
+        log.info("ListOfTasksNotFoundException exception!");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

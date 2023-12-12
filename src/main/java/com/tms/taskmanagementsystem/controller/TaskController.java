@@ -1,13 +1,15 @@
-package controller;
+package com.tms.taskmanagementsystem.controller;
 
-import domain.Task;
-import exceptions.TaskNotFoundException;
+import com.tms.taskmanagementsystem.domain.Task;
+import com.tms.taskmanagementsystem.exceptions.TaskNotFoundException;
+import com.tms.taskmanagementsystem.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +57,16 @@ public class TaskController {
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get tasks with filters")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks are found with filter"),
+            @ApiResponse(responseCode = "404", description = "Tasks are not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),})
+    @GetMapping("/search/filter")
+    public ResponseEntity getAllTasksWithFilter(@RequestParam("query") String query, Pageable pageable) {
+        return ResponseEntity.ok(taskService.filterTasks(query, pageable));
+    }
+
     @Operation(summary = "Creating task", description = "Create task,  need to pass object Task in format JSON")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task is created"),
@@ -76,6 +88,14 @@ public class TaskController {
     public ResponseEntity<HttpStatus> updateTask(@RequestBody Task task) {
         taskService.updateTask(task);
         log.info("Task with id: " + task.getId() + " is updated!");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/{taskId}/status")
+    public ResponseEntity<HttpStatus> updateTaskStatus(@PathVariable Integer taskId, @RequestBody Task task) {
+        taskService.getTask(taskId);
+        taskService.updateTaskStatus(task);
+        log.info("Status of task with id: " + taskId + " is updated!");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

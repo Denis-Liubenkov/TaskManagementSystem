@@ -1,21 +1,25 @@
-package service;
+package com.tms.taskmanagementsystem.service;
 
-import domain.Task;
-import domain.User;
-import exceptions.TaskNotFoundException;
-import exceptions.UserNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.tms.taskmanagementsystem.domain.Task;
+import com.tms.taskmanagementsystem.domain.User;
+import com.tms.taskmanagementsystem.exceptions.ListOfTasksNotFoundException;
+import com.tms.taskmanagementsystem.exceptions.TaskNotFoundException;
+import com.tms.taskmanagementsystem.security.domain.SecurityCredentials;
+import com.tms.taskmanagementsystem.security.repository.SecurityCredentialsRepository;
+import com.tms.taskmanagementsystem.exceptions.UserNotFoundException;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.tms.taskmanagementsystem.repository.TaskRepository;
+import com.tms.taskmanagementsystem.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TaskService {
-
-    private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
     private final TaskRepository taskRepository;
 
@@ -32,7 +36,7 @@ public class TaskService {
     public List<Task> getTasks() {
         List<Task> taskList = taskRepository.findAll();
         if (taskList.isEmpty()) {
-            throw new TaskNotFoundException();
+            throw new ListOfTasksNotFoundException();
         }
         return taskList;
     }
@@ -50,9 +54,8 @@ public class TaskService {
         task.setDescription(task.getDescription());
         task.setStatus(task.getStatus());
         task.setPriority(task.getPriority());
-        task.setExecutor(task.getExecutor());
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<SecurityCredentials> userLogin = securityCredentialsRepository.findByUserLogin(login);
+        Optional<SecurityCredentials> userLogin = securityCredentialsRepository.findByEmail(login);
         if (userLogin.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -61,15 +64,23 @@ public class TaskService {
         taskRepository.save(task);
     }
 
+   public PaginatedTaskResponse filterTasks(String priority, Pageable pageable){
+       Page<Task>tasks=taskRepository.findAllByStatusAndPriority(priority,pageable);
+       return PaginatedTaskResponse.builder()
+   }
+
+    public void updateTaskStatus(Task task){
+      task.setStatus(task.getStatus());
+    }
+
     public void updateTask(Task task) {
         task.setId(task.getId());
         task.setTitle(task.getTitle());
         task.setDescription(task.getDescription());
         task.setStatus(task.getStatus());
         task.setPriority(task.getPriority());
-        task.setExecutor(task.getExecutor());
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<SecurityCredentials> userLogin = securityCredentialsRepository.findByUserLogin(login);
+        Optional<SecurityCredentials> userLogin = securityCredentialsRepository.findByEmail(login);
         if (userLogin.isEmpty()) {
             throw new UserNotFoundException();
         }

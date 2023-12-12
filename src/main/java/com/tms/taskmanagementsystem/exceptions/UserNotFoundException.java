@@ -1,4 +1,4 @@
-package exceptions;
+package com.tms.taskmanagementsystem.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException() {

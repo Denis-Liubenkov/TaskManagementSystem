@@ -1,4 +1,4 @@
-package domain;
+package com.tms.taskmanagementsystem.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,12 +14,12 @@ import java.util.List;
 @Data
 @Schema(description = "description of user")
 @Component
-@Entity(name = "user")
+@Entity(name = "users")
 public class User {
     @Schema(description = "it is unique user`s id")
     @Id
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "users_seq", sequenceName = "users_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
     private Integer id;
 
     @Pattern(regexp = "^[А-Яа-яЁё]+$")
@@ -38,3 +38,4 @@ public class User {
     @JsonBackReference
     private List<Task> taskList = new ArrayList<>();
 }
+

@@ -1,4 +1,4 @@
-package domain;
+package com.tms.taskmanagementsystem.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -32,10 +32,6 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(name = "priority", nullable = false)
     private Priority priority;
-
-    @ManyToOne
-    @JoinColumn(name = "executor_id")
-    private Executor executor;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

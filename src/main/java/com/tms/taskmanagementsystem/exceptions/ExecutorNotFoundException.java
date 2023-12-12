@@ -1,4 +1,4 @@
-package exceptions;
+package com.tms.taskmanagementsystem.exceptions;
 
 public class ExecutorNotFoundException extends RuntimeException {
     public ExecutorNotFoundException() {

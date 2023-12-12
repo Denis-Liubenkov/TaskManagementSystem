@@ -1,6 +1,7 @@
-package controller;
+package com.tms.taskmanagementsystem.controller;
 
-import domain.User;
+import com.tms.taskmanagementsystem.domain.User;
+import com.tms.taskmanagementsystem.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,15 +48,15 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(summary = "Deleting orderedMenu", description = "Delete client,  need to pass the input parameter client`s id")
+    @Operation(summary = "Deleting user", description = "Delete user,  need to pass the input parameter user`s id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Client is deleted"),
-            @ApiResponse(responseCode = "409", description = "Client is not deleted"),
+            @ApiResponse(responseCode = "204", description = "User is deleted"),
+            @ApiResponse(responseCode = "409", description = "User is not deleted"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),})
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteClient(@PathVariable Integer id) {
-        clientService.deleteClientById(id);
-        log.info("Client with id: " + id + " is deleted!");
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Integer id) {
+        userService.deleteUserById(id);
+        log.info("User with id: " + id + " is deleted!");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
