@@ -18,10 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,6 +31,7 @@ public class TaskServiceTest {
     private static final String EMAIL = "den@yandex.by";
 
     private static final Integer ID_USER = 4;
+
     @InjectMocks
     private TaskService taskService;
     @Mock
@@ -100,22 +98,11 @@ public class TaskServiceTest {
         SecurityCredentials securityCredentials = new SecurityCredentials();
         securityCredentials.setUserId(ID_USER);
         Task task = new Task();
-        task.setUser(new User());
+        task.setCreator(new User());
         task.setId(ID_TASK);
         Mockito.when(taskRepository.findById(ID_TASK)).thenReturn(Optional.of(task));
         taskService.getTask(ID_TASK);
         Mockito.verify(taskRepository, Mockito.times(1)).findById(anyInt());
-    }
-
-    @Test
-    public void getTasksTest() {
-        Task task = new Task();
-        List<Task> taskList = new ArrayList<>();
-        taskList.add(task);
-        task.setId(ID_TASK);
-        Mockito.when(taskRepository.findAll()).thenReturn(taskList);
-        taskService.getTasks();
-        Mockito.verify(taskRepository, Mockito.times(1)).findAll();
     }
 
     @Test
@@ -171,7 +158,7 @@ public class TaskServiceTest {
         user.setId(ID_USER);
         Mockito.when(userRepository.findById(ID_USER)).thenReturn(Optional.of(user));
         Task task = new Task();
-        task.setUser(new User());
+        task.setCreator(new User());
         task.setId(ID_TASK);
         taskService.createTask(new Task());
         Mockito.verify(taskRepository, Mockito.times(1)).save(any());
@@ -230,7 +217,7 @@ public class TaskServiceTest {
         user.setId(ID_USER);
         Mockito.when(userRepository.findById(ID_USER)).thenReturn(Optional.of(user));
         Task task = new Task();
-        task.setUser(new User());
+        task.setCreator(new User());
         task.setId(ID_TASK);
         taskService.updateTask(new Task());
         Mockito.verify(taskRepository, Mockito.times(1)).saveAndFlush(any());

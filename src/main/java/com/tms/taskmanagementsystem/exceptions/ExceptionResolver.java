@@ -17,6 +17,12 @@ public class ExceptionResolver {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = NotAccessException.class)
+    public ResponseEntity<HttpStatus> NotAccessException() {
+        log.info("NotAccessException exception!");
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(value = TaskNotFoundException.class)
     public ResponseEntity<HttpStatus> taskNotFoundException() {
         log.info("TaskNotFoundException exception!");
@@ -26,12 +32,6 @@ public class ExceptionResolver {
     @ExceptionHandler(value = ListOfTasksNotFoundException.class)
     public ResponseEntity<HttpStatus> listOfTasksNotFoundException() {
         log.info("ListOfTasksNotFoundException exception!");
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = ExecutorNotFoundException.class)
-    public ResponseEntity<HttpStatus> executorNotFoundException() {
-        log.info("ExecutorNotFoundException exception!");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

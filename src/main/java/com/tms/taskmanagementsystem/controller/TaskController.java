@@ -1,6 +1,6 @@
 package com.tms.taskmanagementsystem.controller;
 
-import com.tms.taskmanagementsystem.domain.Task;
+import com.tms.taskmanagementsystem.domain.*;
 import com.tms.taskmanagementsystem.exceptions.TaskNotFoundException;
 import com.tms.taskmanagementsystem.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,12 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task")
@@ -28,21 +27,44 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @Operation(summary = "Get list of tasks")
+    @Operation(summary = "Get tasks")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of tasks is found"),
-            @ApiResponse(responseCode = "404", description = "List of tasks is not found"),
+            @ApiResponse(responseCode = "200", description = "Tasks are found"),
+            @ApiResponse(responseCode = "404", description = "Tasks are not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),})
     @GetMapping("/list")
-    public ResponseEntity<List<Task>> getAllTasks() {
-        List<Task>tasks = taskService.getTasks();
-        if (!tasks.isEmpty()) {
-            log.info("List of tasks is found!");
-            return new ResponseEntity<>(tasks, HttpStatus.OK);
-        } else {
-            log.info("List of tasks is not found!");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Map<String, Object>> getAllTasks(
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
+    ) {
+        Map<String, Object> tasks = taskService.getTasks(title, page, size);
+        log.info("List of tasks is found!");
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get tasks by priority")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks are found"),
+            @ApiResponse(responseCode = "404", description = "Tasks are not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),})
+    @GetMapping("/filter/priority")
+    public ResponseEntity<List<Task>> taskAsFilteredList(@RequestParam Priority priority) {
+        List<Task> filteredTaskAsList = taskService.filteredTaskAsList(priority);
+        log.info("List of tasks by priority: " + priority + " is found!");
+        return new ResponseEntity<>(filteredTaskAsList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get tasks by status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks are found"),
+            @ApiResponse(responseCode = "404", description = "Tasks are not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),})
+    @GetMapping("/filter/status")
+    public ResponseEntity<List<Task>> taskAsFilteredList(@RequestParam Status status) {
+        List<Task> filteredTaskAsList = taskService.filteredTaskAsList(status);
+        log.info("Task with id: " + status + " is found!");
+        return new ResponseEntity<>(filteredTaskAsList, HttpStatus.OK);
     }
 
     @Operation(summary = "Get task", description = "Get one task , need to pass the input parameter task`s id")
@@ -57,16 +79,6 @@ public class TaskController {
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get tasks with filters")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Tasks are found with filter"),
-            @ApiResponse(responseCode = "404", description = "Tasks are not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error"),})
-    @GetMapping("/search/filter")
-    public ResponseEntity getAllTasksWithFilter(@RequestParam("query") String query, Pageable pageable) {
-        return ResponseEntity.ok(taskService.filterTasks(query, pageable));
-    }
-
     @Operation(summary = "Creating task", description = "Create task,  need to pass object Task in format JSON")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task is created"),
@@ -79,9 +91,21 @@ public class TaskController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Assignee task")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Task is assigned"),
+            @ApiResponse(responseCode = "409", description = "Task is not assigned"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),})
+    @PostMapping("/{taskId}/assign")
+    public ResponseEntity<HttpStatus> assignTask(@PathVariable Integer taskId, @RequestBody AssigneeDTO assigneeDTO) {
+        taskService.assignedTask(assigneeDTO);
+        log.info("Task with id: " + taskId + " is assigned!");
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
     @Operation(summary = "Updating task", description = "Update task, need to pass object Task in format JSON")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Task is updates"),
+            @ApiResponse(responseCode = "204", description = "Task is updated"),
             @ApiResponse(responseCode = "409", description = "Task is not updated"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),})
     @PutMapping
@@ -91,10 +115,14 @@ public class TaskController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{taskId}/status")
-    public ResponseEntity<HttpStatus> updateTaskStatus(@PathVariable Integer taskId, @RequestBody Task task) {
-        taskService.getTask(taskId);
-        taskService.updateTaskStatus(task);
+    @Operation(summary = "Updating taskStatus")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "TaskStatus is updated"),
+            @ApiResponse(responseCode = "409", description = "TaskStatus is not updated"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),})
+    @PutMapping("/{taskId}/status")
+    public ResponseEntity<HttpStatus> updateTaskStatus(@PathVariable Integer taskId, @RequestBody StatusDTO statusDTO) {
+        taskService.changeStatusTask(statusDTO);
         log.info("Status of task with id: " + taskId + " is updated!");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

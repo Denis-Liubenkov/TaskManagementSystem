@@ -34,8 +34,12 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Task> taskList = new ArrayList<>();
+
+    public void addTaskList(Task task) {
+        this.taskList.add(task);
+    }
 }
 

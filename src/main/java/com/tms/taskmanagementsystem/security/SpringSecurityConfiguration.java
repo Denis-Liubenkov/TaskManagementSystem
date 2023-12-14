@@ -45,15 +45,15 @@ public class SpringSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth
-                                 .requestMatchers(HttpMethod.GET, "/user/{id}").hasRole("USER")
                                  .requestMatchers(HttpMethod.POST, "/user/**").permitAll()
                                  .requestMatchers(HttpMethod.PUT, "/user/**").permitAll()
                                  .requestMatchers(HttpMethod.DELETE, "/user/{id}").permitAll()
 
-                                 .requestMatchers(HttpMethod.GET, "/task/**").hasRole("USER")
-                                 .requestMatchers(HttpMethod.POST, "/task").hasRole("USER")
-                                 .requestMatchers(HttpMethod.PUT, "/task").hasRole("USER")
-                                 .requestMatchers(HttpMethod.DELETE, "/task/{id}").hasRole("USER")
+                                 .requestMatchers(HttpMethod.GET, "/task/**").permitAll()
+                                 .requestMatchers(HttpMethod.POST, "/task").permitAll()
+                                 .requestMatchers(HttpMethod.PUT, "/task").permitAll()
+                                 .requestMatchers(HttpMethod.DELETE, "/task/{id}").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/task/{taskId}/status").hasRole("USER")
 
                                 .requestMatchers(HttpMethod.POST, "/authentication").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/registration").permitAll()

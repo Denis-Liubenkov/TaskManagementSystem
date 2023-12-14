@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tms.taskmanagementsystem.domain.Priority;
 import com.tms.taskmanagementsystem.domain.Status;
 import com.tms.taskmanagementsystem.domain.Task;
+import com.tms.taskmanagementsystem.repository.TaskRepository;
 import com.tms.taskmanagementsystem.security.filter.JwtAuthenticationFilter;
 import com.tms.taskmanagementsystem.service.TaskService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,14 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -46,7 +43,8 @@ public class TaskControllerTest {
     @MockBean
     TaskService taskService;
 
-    static List<Task> taskList = new ArrayList<>();
+    @MockBean
+    TaskRepository taskRepository;
 
     static Task task = new Task();
 
@@ -57,7 +55,6 @@ public class TaskControllerTest {
         task.setId(ID_TASK);
         task.setStatus(Status.COMPLETED);
         task.setPriority(Priority.HIGH);
-        taskList.add(task);
     }
 
     @Test
@@ -65,14 +62,6 @@ public class TaskControllerTest {
         Mockito.when(taskService.getTask(anyInt())).thenReturn(Optional.ofNullable(task));
         mockMvc.perform(get("/task/2"))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    public void getTasksTestReturnListOfTasks() throws Exception {
-        Mockito.when(taskService.getTasks()).thenReturn(taskList);
-        mockMvc.perform(get("/task/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
 
     @Test

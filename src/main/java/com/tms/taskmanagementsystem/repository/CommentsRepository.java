@@ -1,17 +1,12 @@
 package com.tms.taskmanagementsystem.repository;
 
-import com.tms.taskmanagementsystem.domain.User;
+import com.tms.taskmanagementsystem.domain.Comments;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-
-    @NonNull
-    Optional<User> findById(@NonNull Integer id);
+public interface CommentsRepository extends JpaRepository<Comments, Integer> {
 
     void deleteById(@NonNull Integer id);
 }

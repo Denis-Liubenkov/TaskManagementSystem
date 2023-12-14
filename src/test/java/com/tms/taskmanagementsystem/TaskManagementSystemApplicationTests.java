@@ -12,12 +12,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 class TaskManagementSystemApplicationTests {
 
-	@Autowired
-	TaskController taskController;
+    @Autowired
+    TaskController taskController;
 
-	@Test
-	void contextLoads() {
-		Assertions.assertThat(taskController).isNotNull();
-	}
-
+    @Test
+    void contextLoads() {
+        Assertions.assertThat(taskController).isNotNull();
+    }
 }
